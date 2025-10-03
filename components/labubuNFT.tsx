@@ -67,7 +67,6 @@ const LabubuImage = ({
   imageUrl: string;
   name: string;
 }) => {
-  console.log('render LabubuImage');
   const ref = useFadeIn() as RefObject<HTMLImageElement>;
 
   return <img src={imageUrl} alt={name} ref={ref} />;

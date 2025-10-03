@@ -28,6 +28,7 @@ export default function Category({
   const [searchTerm, setSearchTerm] = useState(searchTermParam);
   const [isUsingAI, setUsingAI] = useState(false);
   const [currentParams, setCurrentParams] = useState(searchParams);
+  const [labubuList, setLabubuList] = useState<Product[]>([]);
 
   const productsData =
     categoryId == 'all'
@@ -35,13 +36,6 @@ export default function Category({
         ? productsWithAI
         : products
       : getProductsByCategory(categoryId as string, isUsingAI);
-
-  useEffect(() => {
-    setCurrentParams(searchParams);
-  }, [searchParams]);
-  useEffect(() => {
-    setSearchTerm(searchTermParam);
-  }, [searchTermParam]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newSearchTerm = event.target.value;
@@ -66,35 +60,48 @@ export default function Category({
     router.push(`?${params.toString()}`);
   };
 
-  const getProductsByAI = () => {
-    return productsData;
-  };
-  const filteredProducts = isUsingAI
-    ? getProductsByAI()
-    : productsData.filter((product) => {
-        const matchesSearch =
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.tags.some((tag) =>
-            tag.toLowerCase().includes(searchTerm.toLowerCase())
-          ) ||
-          product.id.toString().includes(searchTerm);
+  const filteredProducts = productsData.filter((product) => {
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.tags.some((tag) =>
+        tag.toLowerCase().includes(searchTerm.toLowerCase())
+      ) ||
+      product.id.toString().includes(searchTerm);
 
-        return matchesSearch;
+    return matchesSearch;
+  });
+
+  useEffect(() => {
+    setCurrentParams(searchParams);
+  }, [searchParams]);
+
+  useEffect(() => {
+    setSearchTerm(searchTermParam);
+  }, [searchTermParam]);
+
+  useEffect(() => {
+    const res = fetch(
+      'https://devday-aavn-d5284e914439.herokuapp.com/api/products'
+    );
+
+    res
+      .then((r) => r.json())
+      .then((data) => {
+        const productsList = data?.data?.products as Product[];
+        setLabubuList(
+          productsList?.filter((product) => {
+            const matchesSearch =
+              product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              product.tags.some((tag) =>
+                tag.toLowerCase().includes(searchTerm.toLowerCase())
+              ) ||
+              product.id.toString().includes(searchTerm);
+
+            return matchesSearch;
+          })
+        );
       });
-
-  const handleCategoryClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLElement;
-    const newCategoryId = target.getAttribute('data-id');
-    const params = new URLSearchParams(currentParams);
-    if (searchTerm) params.set('search-text', searchTerm);
-    if (newCategoryId === categoryId) {
-      router.push(`/products/all?${params.toString()}`);
-      target.classList.remove('selected');
-    } else {
-      router.push(`/products/${newCategoryId}?${params.toString()}`);
-      target.classList.add('selected');
-    }
-  };
+  }, [searchTerm]);
 
   return (
     <>
@@ -135,7 +142,7 @@ export default function Category({
           </div>
         ) : (
           <div className='category-items'>
-            {filteredProducts.map((item: Product, idx) => {
+            {labubuList.map((item: Product, idx) => {
               return (
                 <div key={item.id}>
                   <LabubuNFT
