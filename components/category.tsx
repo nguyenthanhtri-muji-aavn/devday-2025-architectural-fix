@@ -80,13 +80,10 @@ export default function Category({
   }, [searchTermParam]);
 
   useEffect(() => {
-    const res = fetch(
-      'https://devday-aavn-d5284e914439.herokuapp.com/api/products'
-    );
-
-    res
-      .then((r) => r.json())
-      .then((data) => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('/api/products');
+        const data = await res.json();
         const productsList = data?.data?.products as Product[];
         setLabubuList(
           productsList?.filter((product) => {
@@ -100,7 +97,12 @@ export default function Category({
             return matchesSearch;
           })
         );
-      });
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
   }, [searchTerm]);
 
   return (
