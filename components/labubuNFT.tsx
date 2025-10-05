@@ -19,6 +19,7 @@ interface LabubuNFTProps {
   backgroundImg?: string;
   price: number;
   isFlashSale: boolean;
+  quantity?: number;
 }
 
 const useFadeIn = () => {
@@ -201,10 +202,12 @@ const FlashSaleBadgeWithCounterWrapper = ({
   labubuInfoSection,
   cartItemPriceSection,
   isFlashSale,
+  quantity,
 }: {
   labubuInfoSection: ReactNode;
   cartItemPriceSection: ReactNode;
   isFlashSale: boolean;
+  quantity?: number;
 }) => {
   const [timeLeft, setTimeLeft] = useState({
     hours: 7,
@@ -258,20 +261,35 @@ const FlashSaleBadgeWithCounterWrapper = ({
 
   return (
     <>
-      <div>Badge Component</div>
       <div className='card-body'>
         <div className='cart-item-name'>
           {labubuInfoSection}
 
-          {isFlashSale && (
-            <FlashSaleCounter formattedCounter={formattedCounter} />
-          )}
+          <div className='cart-item-stock-info'>
+            <MemoizedStockInfo quantity={quantity} />
+            {isFlashSale && (
+              <FlashSaleCounter formattedCounter={formattedCounter} />
+            )}
+          </div>
         </div>
         {cartItemPriceSection}
       </div>
     </>
   );
 };
+
+const StockInfo = ({ quantity }: { quantity?: number }) => {
+  const ref = useFadeIn() as RefObject<HTMLSpanElement>;
+
+  return <span ref={ref}>In stock: {quantity ?? 0}</span>;
+};
+
+const MemoizedStockInfo = memo(StockInfo);
+
+const FlashSaleBanner = () => {
+  return <div className='flash-sale-banner'>Flash Sale</div>;
+};
+const MemoizedFlashSaleBanner = memo(FlashSaleBanner);
 
 const LabubuNFT: FC<LabubuNFTProps> = ({
   isFlashSale,
@@ -280,6 +298,7 @@ const LabubuNFT: FC<LabubuNFTProps> = ({
   backgroundColor,
   backgroundImg,
   price,
+  quantity,
 }) => {
   const data = {
     name,
@@ -322,6 +341,8 @@ const LabubuNFT: FC<LabubuNFTProps> = ({
         } as React.CSSProperties
       }
     >
+      {isFlashSale && <FlashSaleBanner />}
+
       <LabubuImage imageUrl={imageUrl} name={name} />
 
       <LabubuBackground backgroundImg={backgroundImg} />
@@ -336,6 +357,7 @@ const LabubuNFT: FC<LabubuNFTProps> = ({
           </div>
         }
         isFlashSale={isFlashSale}
+        quantity={quantity}
       />
     </div>
   );

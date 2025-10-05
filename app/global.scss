@@ -1250,3 +1250,45 @@ html {
 .button-bounce-in {
   animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
+
+.cart-item-stock-info {
+  font-family: var(--font-orbitron);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px; /* 128.571% */
+  letter-spacing: 0.28px;
+  display: flex;
+  justify-content: space-between;
+  > span {
+    font-family: var(--font-outfit);
+  }
+}
+
+.flash-sale-banner {
+  position: absolute;
+  display: inline-flex;
+  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  z-index: 1;
+  border-radius: 24px;
+  background: linear-gradient(
+    92deg,
+    rgba(255, 86, 246, 0.8) 21.43%,
+    rgba(185, 54, 238, 0.8) 50.63%,
+    rgba(59, 172, 226, 0.8) 100%,
+    rgba(64, 106, 255, 0.8) 117.04%
+  );
+  box-shadow: 0 4px 97px 0 rgba(255, 86, 246, 0.51);
+  backdrop-filter: blur(96px);
+  color: #fff;
+  font-family: var(--font-orbitron);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: normal;
+  top: -16.5px;
+  left: -16px;
+}
