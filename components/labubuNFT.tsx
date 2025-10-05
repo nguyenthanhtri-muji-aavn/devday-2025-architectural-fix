@@ -287,7 +287,13 @@ const StockInfo = ({ quantity }: { quantity?: number }) => {
 const MemoizedStockInfo = memo(StockInfo);
 
 const FlashSaleBanner = () => {
-  return <div className='flash-sale-banner'>Flash Sale</div>;
+  const ref = useFadeIn() as RefObject<HTMLDivElement>;
+
+  return (
+    <div className='flash-sale-banner' ref={ref}>
+      FLASH SALE
+    </div>
+  );
 };
 const MemoizedFlashSaleBanner = memo(FlashSaleBanner);
 
