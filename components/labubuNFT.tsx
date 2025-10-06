@@ -94,6 +94,7 @@ const PlaceABidButton: FC<{ onClick: () => void }> = ({ onClick }) => {
     </button>
   );
 };
+const MemoizedPlaceABidButton = memo(PlaceABidButton);
 
 const LabubuInfo = ({ name }: { name: string }) => {
   const ref = useFadeIn() as RefObject<HTMLDivElement>;
@@ -106,9 +107,11 @@ const LabubuInfo = ({ name }: { name: string }) => {
 };
 
 const LabubuPrice = ({
-  labubuPriceData,
+  price,
+  currency,
 }: {
-  labubuPriceData: { price: number; currency: string };
+  price: number;
+  currency: string;
 }) => {
   const ref = useFadeIn() as RefObject<HTMLDivElement>;
 
@@ -116,16 +119,17 @@ const LabubuPrice = ({
     <div ref={ref}>
       <img
         src='/assets/images/price.svg'
-        alt={labubuPriceData.currency}
+        alt={currency}
         width='32'
         height='32'
       />
       <span className='item-price'>
-        {labubuPriceData.price} {labubuPriceData.currency}
+        {price} {currency}
       </span>
     </div>
   );
 };
+const MemoizedLabubuPrice = memo(LabubuPrice);
 
 const FlashSaleCounter = ({
   formattedCounter,
@@ -136,16 +140,74 @@ const FlashSaleCounter = ({
   return <span ref={ref}>{formattedCounter}</span>;
 };
 
+const PlaceABidWrapper = ({
+  quantity,
+  name,
+  labubuInfoSection,
+  flashSaleSection,
+  price,
+}: {
+  quantity: number;
+  name: string;
+  labubuInfoSection: ReactElement;
+  flashSaleSection: ReactElement | null;
+  price: number;
+}) => {
+  const [stockQuantity, setStockQuantity] = useState(quantity);
+
+  const memoizedOnClick = useCallback(async () => {
+    console.log('Place a Bid clicked');
+    const productIdInString = name.split('#').pop();
+
+    const productId =
+      productIdInString && typeof productIdInString === 'string'
+        ? parseInt(name.split('#').pop() as string)
+        : null;
+
+    if (!productId) return;
+
+    const newStockQuantity = await handleAddToCart(productId);
+
+    if (newStockQuantity === null) return;
+
+    setStockQuantity(newStockQuantity);
+  }, [name]);
+
+  return (
+    <>
+      <div className='card-body'>
+        <div className='cart-item-name'>
+          {labubuInfoSection}
+
+          <div className='cart-item-stock-info'>
+            <MemoizedStockInfo quantity={stockQuantity} />
+
+            {flashSaleSection}
+          </div>
+        </div>
+
+        <div className='cart-item-price'>
+          <MemoizedLabubuPrice price={price} currency='ETH' />
+          <MemoizedPlaceABidButton onClick={memoizedOnClick} />
+        </div>
+      </div>
+    </>
+  );
+};
+const MemoizedPlaceABidWrapper = memo(PlaceABidWrapper);
+
 const FlashSaleBadgeWithCounterWrapper = ({
   labubuInfoSection,
-  cartItemPriceSection,
   isFlashSale,
   quantity,
+  price,
+  name,
 }: {
-  labubuInfoSection: ReactNode;
-  cartItemPriceSection: ReactNode;
+  labubuInfoSection: ReactElement;
   isFlashSale: boolean;
   quantity?: number;
+  price: number;
+  name: string;
 }) => {
   const [timeLeft, setTimeLeft] = useState({
     hours: 7,
@@ -192,23 +254,18 @@ const FlashSaleBadgeWithCounterWrapper = ({
   };
 
   const formattedCounter = formatTime(timeLeft);
+  const flashSaleSection = isFlashSale ? (
+    <FlashSaleCounter formattedCounter={formattedCounter} />
+  ) : null;
 
   return (
-    <>
-      <div className='card-body'>
-        <div className='cart-item-name'>
-          {labubuInfoSection}
-
-          <div className='cart-item-stock-info'>
-            <MemoizedStockInfo quantity={quantity} />
-            {isFlashSale && (
-              <FlashSaleCounter formattedCounter={formattedCounter} />
-            )}
-          </div>
-        </div>
-        {cartItemPriceSection}
-      </div>
-    </>
+    <MemoizedPlaceABidWrapper
+      quantity={quantity ?? 0}
+      name={name}
+      labubuInfoSection={labubuInfoSection}
+      flashSaleSection={flashSaleSection}
+      price={price}
+    />
   );
 };
 
@@ -230,20 +287,32 @@ const FlashSaleBanner = () => {
   );
 };
 
-const LabubuTransactionData = ({
-  labubuPriceData,
-  onClick,
-}: {
-  labubuPriceData: { price: number; currency: string };
-  onClick: () => void;
-}) => {
-  return (
-    <div className='cart-item-price'>
-      <LabubuPrice labubuPriceData={labubuPriceData} />
+const handleAddToCart = async (productId: number): Promise<number | null> => {
+  const sessionId = sessionStorage.getItem('your-session-id') as string;
 
-      <PlaceABidButton onClick={onClick} />
-    </div>
-  );
+  try {
+    const res = await fetch('/api/cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Session-Id': sessionId,
+      },
+      body: JSON.stringify({
+        productId: productId,
+        quantity: 1,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to add item to cart');
+    }
+
+    const data = await res.json();
+    return data.data.product.stockQuantity;
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    return null;
+  }
 };
 
 const LabubuNFT: FC<LabubuNFTProps> = ({
@@ -255,19 +324,6 @@ const LabubuNFT: FC<LabubuNFTProps> = ({
   price,
   quantity,
 }) => {
-  const data = {
-    name,
-    price,
-    isFlashSale,
-  };
-
-  const onClick = () => console.log('Place a Bid clicked');
-
-  const labubuPriceData = {
-    price,
-    currency: 'ETH',
-  };
-
   return (
     <div
       className='labubu-card labubu-card-fade-in'
@@ -285,15 +341,11 @@ const LabubuNFT: FC<LabubuNFTProps> = ({
       <LabubuBackground backgroundImg={backgroundImg} />
 
       <FlashSaleBadgeWithCounterWrapper
+        name={name}
         labubuInfoSection={<LabubuInfo name={name} />}
-        cartItemPriceSection={
-          <LabubuTransactionData
-            labubuPriceData={labubuPriceData}
-            onClick={onClick}
-          />
-        }
         isFlashSale={isFlashSale}
         quantity={quantity}
+        price={price}
       />
     </div>
   );

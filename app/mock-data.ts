@@ -261,3 +261,34 @@ export function getProductsByCategory(
 }
 
 export { products, cart, categories, productsWithAI };
+
+const backgroundColors = [
+  '#49B649',
+  '#AF2A3A',
+  '#E1BF47',
+  '#4962B6',
+  '#B69349',
+  '#954AB1',
+  '#1E82A3',
+  '#BE0B88',
+  '#A5B649',
+  '#49ABB6',
+  '#B64957',
+  '#B66649',
+  '#810CC5',
+  '#EDBF6B',
+  '#9F0000',
+  '#A95FA1',
+  '#C8BD1D',
+  '#2E71DE',
+  '#179193',
+  '#1340BA',
+  '#B65749',
+  '#1C914A',
+  '#D3A117',
+];
+
+export function generateRandomBackground(): string {
+  const randomIndex = Math.floor(Math.random() * backgroundColors.length);
+  return backgroundColors[randomIndex];
+}

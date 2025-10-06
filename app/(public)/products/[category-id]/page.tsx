@@ -8,6 +8,8 @@ export default function CategoryPage({
   params: { 'category-id': string };
 }) {
   useEffect(() => {
+    sessionStorage.setItem('your-session-id', 'your-session-id');
+
     const body = document.getElementsByClassName('body')[0];
     body.classList.add('category-page');
 

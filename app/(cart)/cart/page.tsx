@@ -74,7 +74,6 @@ const CartItem = ({
     </Link>
   );
 };
-const MemoizedCartItem = memo(CartItem);
 
 const UserBalance = () => {
   const ref = useFadeIn() as RefObject<HTMLDivElement>;
@@ -98,7 +97,6 @@ const UserBalance = () => {
     </div>
   );
 };
-const MemoizedUserBalance = memo(UserBalance);
 
 const InteractiveSection = () => {
   const [followers, setFollowers] = useState(10);
@@ -184,8 +182,9 @@ const CartPage = () => {
         </div>
         <InteractiveSection />
 
-        <MemoizedUserBalance />
+        <UserBalance />
       </div>
+
       <div className='cart-detail'>
         <div className='cart-title'>
           <span>Your Biddings</span>
@@ -194,11 +193,7 @@ const CartPage = () => {
 
         <div className='cart-item-wrapper'>
           {memoizedCartItemsData.map((item, idx) => (
-            <MemoizedCartItem
-              key={item?.id}
-              item={item}
-              hasLatestBid={idx % 2 === 0}
-            />
+            <CartItem key={item?.id} item={item} hasLatestBid={idx % 2 === 0} />
           ))}
         </div>
       </div>
