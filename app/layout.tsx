@@ -4,7 +4,7 @@ import { Orbitron, Outfit, Quicksand} from 'next/font/google';
 import { Analytics } from "@vercel/analytics/react"
 
 export const metadata = {
-  title: "Labubu NFT",
+  title: "Labubu NFT - Architectural fix",
   description:
     "A sample Next.js app showing dynamic routing and intercepting routing with modals as a route.",
 };
