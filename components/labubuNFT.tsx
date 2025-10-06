@@ -201,14 +201,14 @@ const FlashSaleBadgeWithCounterWrapper = ({
   labubuInfoSection,
   isFlashSale,
   quantity,
-  price,
   name,
+  priceSection,
 }: {
   labubuInfoSection: ReactElement;
   isFlashSale: boolean;
   quantity?: number;
-  price: number;
   name: string;
+  priceSection: ReactElement;
 }) => {
   const [stockQuantity, setStockQuantity] = useState(quantity);
   const [timeLeft, setTimeLeft] = useState({
@@ -282,7 +282,7 @@ const FlashSaleBadgeWithCounterWrapper = ({
           {labubuInfoSection}
 
           <div className='cart-item-stock-info'>
-            <MemoizedStockInfo quantity={stockQuantity} />
+            <StockInfo quantity={stockQuantity} />
 
             {isFlashSale && (
               <FlashSaleCounter formattedCounter={formattedCounter} />
@@ -291,7 +291,7 @@ const FlashSaleBadgeWithCounterWrapper = ({
         </div>
 
         <div className='cart-item-price'>
-          <MemoizedLabubuPrice price={price} currency='ETH' />
+          {priceSection}
 
           <MemoizedPlaceABidButton onClick={memoizedOnClick} />
         </div>
@@ -376,7 +376,7 @@ const LabubuNFT: FC<LabubuNFTProps> = ({
         labubuInfoSection={<LabubuInfo name={name} />}
         isFlashSale={isFlashSale}
         quantity={quantity}
-        price={price}
+        priceSection={<LabubuPrice price={price} currency='ETH' />}
       />
     </div>
   );
