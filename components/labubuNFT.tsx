@@ -72,7 +72,6 @@ const LabubuImage = ({
 
   return <img src={imageUrl} alt={name} ref={ref} />;
 };
-const MemoizedLabubuImage = memo(LabubuImage);
 
 /**
  * LabubuBackground Component
@@ -85,7 +84,6 @@ const LabubuBackground = ({ backgroundImg }: { backgroundImg?: string }) => {
     </div>
   );
 };
-const MemoizedLabubuBackground = memo(LabubuBackground);
 
 const PlaceABidButton: FC<{ onClick: () => void }> = ({ onClick }) => {
   const ref = useButtonAnimation();
@@ -96,7 +94,6 @@ const PlaceABidButton: FC<{ onClick: () => void }> = ({ onClick }) => {
     </button>
   );
 };
-const MemoizedPlaceABidButton = memo(PlaceABidButton);
 
 const LabubuInfo = ({ name }: { name: string }) => {
   const ref = useFadeIn() as RefObject<HTMLDivElement>;
@@ -107,8 +104,6 @@ const LabubuInfo = ({ name }: { name: string }) => {
     </div>
   );
 };
-
-const MemoizedLabubuInfo = memo(LabubuInfo);
 
 const LabubuPrice = ({
   labubuPriceData,
@@ -131,63 +126,7 @@ const LabubuPrice = ({
     </div>
   );
 };
-const MemoizedLabubuPrice = memo(LabubuPrice);
 
-const FlashSaleCollocation = ({ isFlashSale }: { isFlashSale: boolean }) => {
-  const ref = useFadeIn() as RefObject<HTMLSpanElement>;
-
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 7,
-    minutes: 4,
-    seconds: 8,
-  });
-
-  useEffect(() => {
-    if (!isFlashSale) return;
-
-    const countdown = setInterval(() => {
-      setTimeLeft((prev) => {
-        let { hours, minutes, seconds } = prev;
-
-        if (seconds > 0) {
-          seconds--;
-        } else if (minutes > 0) {
-          minutes--;
-          seconds = 59;
-        } else if (hours > 0) {
-          hours--;
-          minutes = 59;
-          seconds = 59;
-        } else {
-          clearInterval(countdown);
-          return prev;
-        }
-
-        return { hours, minutes, seconds };
-      });
-    }, 1000);
-
-    return () => {
-      clearInterval(countdown);
-    };
-  }, [isFlashSale]);
-
-  const formatTime = (timeLeft: {
-    hours: number;
-    minutes: number;
-    seconds: number;
-  }) => {
-    return `${timeLeft.hours}h : ${timeLeft.minutes}m : ${timeLeft.seconds}s`;
-  };
-
-  const formattedCounter = formatTime(timeLeft);
-  const memoizedFormattedCounter = useMemo(
-    () => formattedCounter,
-    [formattedCounter]
-  );
-
-  return <span ref={ref}>{formattedCounter}</span>;
-};
 const FlashSaleCounter = ({
   formattedCounter,
 }: {
@@ -196,7 +135,6 @@ const FlashSaleCounter = ({
   const ref = useFadeIn() as RefObject<HTMLSpanElement>;
   return <span ref={ref}>{formattedCounter}</span>;
 };
-const MemoizedFlashSaleCounter = memo(FlashSaleCounter);
 
 const FlashSaleBadgeWithCounterWrapper = ({
   labubuInfoSection,
@@ -254,10 +192,6 @@ const FlashSaleBadgeWithCounterWrapper = ({
   };
 
   const formattedCounter = formatTime(timeLeft);
-  const memoizedFormattedCounter = useMemo(
-    () => formattedCounter,
-    [formattedCounter]
-  );
 
   return (
     <>
@@ -295,7 +229,22 @@ const FlashSaleBanner = () => {
     </div>
   );
 };
-const MemoizedFlashSaleBanner = memo(FlashSaleBanner);
+
+const LabubuTransactionData = ({
+  labubuPriceData,
+  onClick,
+}: {
+  labubuPriceData: { price: number; currency: string };
+  onClick: () => void;
+}) => {
+  return (
+    <div className='cart-item-price'>
+      <LabubuPrice labubuPriceData={labubuPriceData} />
+
+      <PlaceABidButton onClick={onClick} />
+    </div>
+  );
+};
 
 const LabubuNFT: FC<LabubuNFTProps> = ({
   isFlashSale,
@@ -311,31 +260,13 @@ const LabubuNFT: FC<LabubuNFTProps> = ({
     price,
     isFlashSale,
   };
-  const memoizedData = useMemo(
-    () => ({
-      name,
-      price,
-      isFlashSale,
-    }),
-    [name, price, isFlashSale]
-  );
 
   const onClick = () => console.log('Place a Bid clicked');
-  const memoizedOnClick = useCallback(() => {
-    console.log('Place a Bid clicked');
-  }, []);
 
   const labubuPriceData = {
     price,
     currency: 'ETH',
   };
-  const memoizedLabubuPriceData = useMemo(
-    () => ({
-      price,
-      currency: 'ETH',
-    }),
-    [price]
-  );
 
   return (
     <div
@@ -356,11 +287,10 @@ const LabubuNFT: FC<LabubuNFTProps> = ({
       <FlashSaleBadgeWithCounterWrapper
         labubuInfoSection={<LabubuInfo name={name} />}
         cartItemPriceSection={
-          <div className='cart-item-price'>
-            <LabubuPrice labubuPriceData={labubuPriceData} />
-
-            <PlaceABidButton onClick={onClick} />
-          </div>
+          <LabubuTransactionData
+            labubuPriceData={labubuPriceData}
+            onClick={onClick}
+          />
         }
         isFlashSale={isFlashSale}
         quantity={quantity}
