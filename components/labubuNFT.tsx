@@ -188,6 +188,7 @@ const PlaceABidWrapper = ({
 
         <div className='cart-item-price'>
           <MemoizedLabubuPrice price={price} currency='ETH' />
+
           <MemoizedPlaceABidButton onClick={memoizedOnClick} />
         </div>
       </div>
@@ -209,11 +210,30 @@ const FlashSaleBadgeWithCounterWrapper = ({
   price: number;
   name: string;
 }) => {
+  const [stockQuantity, setStockQuantity] = useState(quantity);
   const [timeLeft, setTimeLeft] = useState({
     hours: 7,
     minutes: 4,
     seconds: 8,
   });
+
+  const memoizedOnClick = useCallback(async () => {
+    console.log('Place a Bid clicked');
+    const productIdInString = name.split('#').pop();
+
+    const productId =
+      productIdInString && typeof productIdInString === 'string'
+        ? parseInt(name.split('#').pop() as string)
+        : null;
+
+    if (!productId) return;
+
+    const newStockQuantity = await handleAddToCart(productId);
+
+    if (newStockQuantity === null) return;
+
+    setStockQuantity(newStockQuantity);
+  }, [name]);
 
   useEffect(() => {
     if (!isFlashSale) return;
@@ -254,18 +274,29 @@ const FlashSaleBadgeWithCounterWrapper = ({
   };
 
   const formattedCounter = formatTime(timeLeft);
-  const flashSaleSection = isFlashSale ? (
-    <FlashSaleCounter formattedCounter={formattedCounter} />
-  ) : null;
 
   return (
-    <MemoizedPlaceABidWrapper
-      quantity={quantity ?? 0}
-      name={name}
-      labubuInfoSection={labubuInfoSection}
-      flashSaleSection={flashSaleSection}
-      price={price}
-    />
+    <>
+      <div className='card-body'>
+        <div className='cart-item-name'>
+          {labubuInfoSection}
+
+          <div className='cart-item-stock-info'>
+            <MemoizedStockInfo quantity={stockQuantity} />
+
+            {isFlashSale && (
+              <FlashSaleCounter formattedCounter={formattedCounter} />
+            )}
+          </div>
+        </div>
+
+        <div className='cart-item-price'>
+          <MemoizedLabubuPrice price={price} currency='ETH' />
+
+          <MemoizedPlaceABidButton onClick={memoizedOnClick} />
+        </div>
+      </div>
+    </>
   );
 };
 

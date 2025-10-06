@@ -4,12 +4,18 @@ import {
   memo,
   RefObject,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import Link from 'next/link';
-import { products, cart, Product } from '../../mock-data';
+import {
+  products,
+  cart,
+  Product,
+  generateRandomBackground,
+} from '../../mock-data';
 import Image from 'next/image';
 
 const useFadeIn = () => {
@@ -139,34 +145,37 @@ const InteractiveSection = () => {
 };
 
 const CartPage = () => {
-  const cartItems = cart
-    .map((cartItem) => {
-      const product = products.find((p) => p.id === cartItem.productId);
-      if (!product) return undefined;
-      return {
-        ...product,
-        quantity: cartItem.quantity,
-      };
-    })
-    .filter(
-      (item): item is Product & { quantity: number } => item !== undefined
-    );
-  const memoizedCartItemsData = useMemo(
-    () =>
-      cart
-        .map((cartItem) => {
-          const product = products.find((p) => p.id === cartItem.productId);
-          if (!product) return undefined;
-          return {
-            ...product,
-            quantity: cartItem.quantity,
-          };
-        })
-        .filter(
-          (item): item is Product & { quantity: number } => item !== undefined
-        ),
-    []
-  );
+  const [cartsData, setCartsData] = useState<
+    (Product & { quantity: number })[]
+  >([]);
+
+  useLayoutEffect(() => {
+    const fetchCartItems = async () => {
+      const sessionId = sessionStorage.getItem('your-session-id') as string;
+
+      try {
+        const res = await fetch('/api/cart', {
+          headers: {
+            'X-Session-Id': sessionId,
+          },
+        });
+        const data = await res.json();
+        setCartsData(
+          data?.data?.items
+            ? data?.data?.items.map((cartItem: { product: any }) => ({
+                ...cartItem,
+                ...cartItem.product,
+                background: generateRandomBackground(),
+              }))
+            : []
+        );
+      } catch (error) {
+        console.error('Error fetching cart items:', error);
+      }
+    };
+
+    fetchCartItems();
+  }, []);
 
   return (
     <div className='cart'>
@@ -188,11 +197,11 @@ const CartPage = () => {
       <div className='cart-detail'>
         <div className='cart-title'>
           <span>Your Biddings</span>
-          <span>{cartItems.length} items</span>
+          <span>{cartsData.length} items</span>
         </div>
 
         <div className='cart-item-wrapper'>
-          {memoizedCartItemsData.map((item, idx) => (
+          {cartsData.map((item, idx) => (
             <CartItem key={item?.id} item={item} hasLatestBid={idx % 2 === 0} />
           ))}
         </div>
