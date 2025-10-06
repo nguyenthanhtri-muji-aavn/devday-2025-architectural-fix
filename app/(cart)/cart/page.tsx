@@ -81,6 +81,55 @@ const CartItem = ({
   );
 };
 
+const CartDetailsSection = () => {
+  const [cartsData, setCartsData] = useState<
+    (Product & { quantity: number })[]
+  >([]);
+
+  useLayoutEffect(() => {
+    const fetchCartItems = async () => {
+      const sessionId = sessionStorage.getItem('your-session-id') as string;
+
+      try {
+        const res = await fetch('/api/cart', {
+          headers: {
+            'X-Session-Id': sessionId,
+          },
+        });
+        const data = await res.json();
+        setCartsData(
+          data?.data?.items
+            ? data?.data?.items.map((cartItem: { product: any }) => ({
+                ...cartItem,
+                ...cartItem.product,
+                background: generateRandomBackground(),
+              }))
+            : []
+        );
+      } catch (error) {
+        console.error('Error fetching cart items:', error);
+      }
+    };
+
+    fetchCartItems();
+  }, []);
+
+  return (
+    <div className='cart-detail'>
+      <div className='cart-title'>
+        <span>Your Biddings</span>
+        <span>{cartsData.length} items</span>
+      </div>
+
+      <div className='cart-item-wrapper'>
+        {cartsData.map((item, idx) => (
+          <CartItem key={item?.id} item={item} hasLatestBid={idx % 2 === 0} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const UserBalance = () => {
   const ref = useFadeIn() as RefObject<HTMLDivElement>;
 
@@ -145,38 +194,6 @@ const InteractiveSection = () => {
 };
 
 const CartPage = () => {
-  const [cartsData, setCartsData] = useState<
-    (Product & { quantity: number })[]
-  >([]);
-
-  useLayoutEffect(() => {
-    const fetchCartItems = async () => {
-      const sessionId = sessionStorage.getItem('your-session-id') as string;
-
-      try {
-        const res = await fetch('/api/cart', {
-          headers: {
-            'X-Session-Id': sessionId,
-          },
-        });
-        const data = await res.json();
-        setCartsData(
-          data?.data?.items
-            ? data?.data?.items.map((cartItem: { product: any }) => ({
-                ...cartItem,
-                ...cartItem.product,
-                background: generateRandomBackground(),
-              }))
-            : []
-        );
-      } catch (error) {
-        console.error('Error fetching cart items:', error);
-      }
-    };
-
-    fetchCartItems();
-  }, []);
-
   return (
     <div className='cart'>
       <div className='user-info'>
@@ -194,18 +211,7 @@ const CartPage = () => {
         <UserBalance />
       </div>
 
-      <div className='cart-detail'>
-        <div className='cart-title'>
-          <span>Your Biddings</span>
-          <span>{cartsData.length} items</span>
-        </div>
-
-        <div className='cart-item-wrapper'>
-          {cartsData.map((item, idx) => (
-            <CartItem key={item?.id} item={item} hasLatestBid={idx % 2 === 0} />
-          ))}
-        </div>
-      </div>
+      <CartDetailsSection />
     </div>
   );
 };

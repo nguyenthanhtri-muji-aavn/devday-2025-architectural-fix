@@ -129,7 +129,6 @@ const LabubuPrice = ({
     </div>
   );
 };
-const MemoizedLabubuPrice = memo(LabubuPrice);
 
 const FlashSaleCounter = ({
   formattedCounter,
@@ -139,63 +138,6 @@ const FlashSaleCounter = ({
   const ref = useFadeIn() as RefObject<HTMLSpanElement>;
   return <span ref={ref}>{formattedCounter}</span>;
 };
-
-const PlaceABidWrapper = ({
-  quantity,
-  name,
-  labubuInfoSection,
-  flashSaleSection,
-  price,
-}: {
-  quantity: number;
-  name: string;
-  labubuInfoSection: ReactElement;
-  flashSaleSection: ReactElement | null;
-  price: number;
-}) => {
-  const [stockQuantity, setStockQuantity] = useState(quantity);
-
-  const memoizedOnClick = useCallback(async () => {
-    console.log('Place a Bid clicked');
-    const productIdInString = name.split('#').pop();
-
-    const productId =
-      productIdInString && typeof productIdInString === 'string'
-        ? parseInt(name.split('#').pop() as string)
-        : null;
-
-    if (!productId) return;
-
-    const newStockQuantity = await handleAddToCart(productId);
-
-    if (newStockQuantity === null) return;
-
-    setStockQuantity(newStockQuantity);
-  }, [name]);
-
-  return (
-    <>
-      <div className='card-body'>
-        <div className='cart-item-name'>
-          {labubuInfoSection}
-
-          <div className='cart-item-stock-info'>
-            <MemoizedStockInfo quantity={stockQuantity} />
-
-            {flashSaleSection}
-          </div>
-        </div>
-
-        <div className='cart-item-price'>
-          <MemoizedLabubuPrice price={price} currency='ETH' />
-
-          <MemoizedPlaceABidButton onClick={memoizedOnClick} />
-        </div>
-      </div>
-    </>
-  );
-};
-const MemoizedPlaceABidWrapper = memo(PlaceABidWrapper);
 
 const FlashSaleBadgeWithCounterWrapper = ({
   labubuInfoSection,
@@ -282,7 +224,7 @@ const FlashSaleBadgeWithCounterWrapper = ({
           {labubuInfoSection}
 
           <div className='cart-item-stock-info'>
-            <StockInfo quantity={stockQuantity} />
+            <MemoizedStockInfo quantity={stockQuantity} />
 
             {isFlashSale && (
               <FlashSaleCounter formattedCounter={formattedCounter} />
