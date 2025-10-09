@@ -21,21 +21,9 @@ export default function Category({
 
   const searchParams = useSearchParams();
   const router = useRouter();
-
   const searchTermParam = searchParams.get('search-text') || '';
-  const AIParam = searchParams.get('using-ai') === 'true';
-
   const [searchTerm, setSearchTerm] = useState(searchTermParam);
-  const [isUsingAI, setUsingAI] = useState(false);
-  const [currentParams, setCurrentParams] = useState(searchParams);
   const [labubuList, setLabubuList] = useState<Product[]>([]);
-
-  const productsData =
-    categoryId == 'all'
-      ? isUsingAI
-        ? productsWithAI
-        : products
-      : getProductsByCategory(categoryId as string, isUsingAI);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newSearchTerm = event.target.value;
@@ -43,15 +31,8 @@ export default function Category({
     updateSearchParams('search-text', newSearchTerm);
   };
 
-  const handleAIChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isTurnOnAI = event.target.checked;
-    setUsingAI(isTurnOnAI);
-
-    updateSearchParams('using-ai', isTurnOnAI ? 'true' : '');
-  };
-
   const updateSearchParams = (key: string, value: string) => {
-    const params = new URLSearchParams(currentParams);
+    const params = new URLSearchParams(searchParams);
     if (value) {
       params.set(key, value);
     } else {
@@ -60,7 +41,7 @@ export default function Category({
     router.push(`?${params.toString()}`);
   };
 
-  const filteredProducts = productsData.filter((product) => {
+  const filteredProducts = labubuList.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.tags.some((tag) =>
@@ -72,14 +53,6 @@ export default function Category({
   });
 
   useEffect(() => {
-    setCurrentParams(searchParams);
-  }, [searchParams]);
-
-  useEffect(() => {
-    setSearchTerm(searchTermParam);
-  }, [searchTermParam]);
-
-  useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await fetch('/api/products');
@@ -88,11 +61,13 @@ export default function Category({
         setLabubuList(
           productsList?.filter((product) => {
             const matchesSearch =
-              product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              product.name
+                .toLowerCase()
+                .includes(searchTermParam.toLowerCase()) ||
               product.tags.some((tag) =>
-                tag.toLowerCase().includes(searchTerm.toLowerCase())
+                tag.toLowerCase().includes(searchTermParam.toLowerCase())
               ) ||
-              product.id.toString().includes(searchTerm);
+              product.id.toString().includes(searchTermParam);
 
             return matchesSearch;
           })
@@ -103,7 +78,7 @@ export default function Category({
     };
 
     fetchProducts();
-  }, [searchTerm]);
+  }, []);
 
   return (
     <>
@@ -129,7 +104,7 @@ export default function Category({
           </div>
         ) : (
           <div className='category-items'>
-            {labubuList.map((item: Product, idx) => {
+            {filteredProducts.map((item: Product, idx) => {
               return (
                 <div key={item.id}>
                   <LabubuNFT

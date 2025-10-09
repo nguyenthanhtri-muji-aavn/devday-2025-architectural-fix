@@ -88,12 +88,10 @@ const CartDetailsSection = () => {
 
   useLayoutEffect(() => {
     const fetchCartItems = async () => {
-      const sessionId = sessionStorage.getItem('your-session-id') as string;
-
       try {
         const res = await fetch('/api/cart', {
           headers: {
-            'X-Session-Id': sessionId,
+            'X-Session-Id': 'your-session-id',
           },
         });
         const data = await res.json();
