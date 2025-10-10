@@ -98,6 +98,7 @@ const MemoizedPlaceABidButton = memo(PlaceABidButton);
 
 const LabubuInfo = ({ name }: { name: string }) => {
   const ref = useFadeIn() as RefObject<HTMLDivElement>;
+  console.log('Rendering LabubuInfo for', name);
   return (
     <div className='flex flex-col gap-1' ref={ref}>
       <span className='item-name'>{name}</span>
@@ -324,4 +325,4 @@ const LabubuNFT: FC<LabubuNFTProps> = ({
   );
 };
 
-export default LabubuNFT;
+export default memo(LabubuNFT);
