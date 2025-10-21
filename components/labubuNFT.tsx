@@ -98,7 +98,7 @@ const MemoizedPlaceABidButton = memo(PlaceABidButton);
 
 const LabubuInfo = ({ name }: { name: string }) => {
   const ref = useFadeIn() as RefObject<HTMLDivElement>;
-  console.log('Rendering LabubuInfo for', name);
+
   return (
     <div className='flex flex-col gap-1' ref={ref}>
       <span className='item-name'>{name}</span>
@@ -159,6 +159,24 @@ const FlashSaleBadgeWithCounterWrapper = ({
     minutes: 4,
     seconds: 8,
   });
+
+  const onClick = async () => {
+    console.log('Place a Bid clicked');
+    const productIdInString = name.split('#').pop();
+
+    const productId =
+      productIdInString && typeof productIdInString === 'string'
+        ? parseInt(name.split('#').pop() as string)
+        : null;
+
+    if (!productId) return;
+
+    const newStockQuantity = await handleAddToCart(productId);
+
+    if (newStockQuantity === null) return;
+
+    setStockQuantity(newStockQuantity);
+  };
 
   const memoizedOnClick = useCallback(async () => {
     console.log('Place a Bid clicked');
@@ -236,7 +254,7 @@ const FlashSaleBadgeWithCounterWrapper = ({
         <div className='cart-item-price'>
           {priceSection}
 
-          <MemoizedPlaceABidButton onClick={memoizedOnClick} />
+          <MemoizedPlaceABidButton onClick={onClick} />
         </div>
       </div>
     </>

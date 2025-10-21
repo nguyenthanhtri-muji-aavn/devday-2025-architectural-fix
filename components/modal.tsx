@@ -1,6 +1,12 @@
 'use client';
 
-import { type ElementRef, useEffect, useRef } from 'react';
+import {
+  type ElementRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 
@@ -15,7 +21,7 @@ export function Modal({ children }: { children: React.ReactNode }) {
     }
     return () => {
       document.body.classList.remove('modal-open');
-    }
+    };
   }, []);
 
   useEffect(() => {
@@ -31,22 +37,22 @@ export function Modal({ children }: { children: React.ReactNode }) {
   }
 
   return createPortal(
-    <dialog ref={dialogRef} className="modal" onClose={onDismiss}>
-       <div className="modal-bg">
-          <img
-              src="/assets/images/modal-bg.svg"
-              alt="ETH"
-              width="auto"
-              height="auto"
-            />
-       </div>
-       <div className="modal-content"> 
-       <span className="material-icons" onClick={onDismiss}>close</span>
+    <dialog ref={dialogRef} className='modal' onClose={onDismiss}>
+      <div className='modal-bg'>
+        <img
+          src='/assets/images/modal-bg.svg'
+          alt='ETH'
+          width='auto'
+          height='auto'
+        />
+      </div>
+      <div className='modal-content'>
+        <span className='material-icons' onClick={onDismiss}>
+          close
+        </span>
         {children}
-            
-       </div>
-       
-      </dialog>,
+      </div>
+    </dialog>,
     document.getElementById('modal-root')!
   );
 }

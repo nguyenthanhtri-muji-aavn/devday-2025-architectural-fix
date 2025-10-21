@@ -52,11 +52,13 @@ export default function Category({
     return matchesSearch;
   });
 
+  console.log('Products list rendered');
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await fetch('/api/products');
-        const data = await res.json();
+        const data = { data: { products: products } }; // await res.json();
         const productsList = data?.data?.products as Product[];
         setLabubuList(
           productsList?.filter((product) => {
@@ -78,7 +80,7 @@ export default function Category({
     };
 
     fetchProducts();
-  }, []);
+  }, [searchTermParam]);
 
   return (
     <>
@@ -115,7 +117,9 @@ export default function Category({
                     backgroundColor={item.background}
                     backgroundImg={item.backgroundImg}
                     price={item.price}
-                    quantity={item.stockQuantity}
+                    quantity={
+                      item.stockQuantity || Math.floor(Math.random() * 100) + 1
+                    }
                   />
                 </div>
               );
