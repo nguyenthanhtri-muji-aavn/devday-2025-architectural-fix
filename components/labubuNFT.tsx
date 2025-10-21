@@ -254,7 +254,7 @@ const FlashSaleBadgeWithCounterWrapper = ({
         <div className='cart-item-price'>
           {priceSection}
 
-          <MemoizedPlaceABidButton onClick={onClick} />
+          <MemoizedPlaceABidButton onClick={memoizedOnClick} />
         </div>
       </div>
     </>
