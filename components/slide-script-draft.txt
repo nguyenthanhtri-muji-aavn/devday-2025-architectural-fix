@@ -1,0 +1,29 @@
+✅ 1. Inline functions and objects → Nhà bếp React luôn phục vụ món ăn nếu có yêu cầu. 
++ Khách gọi combo 1 gồm mỳ ý và khoai tây ít muối (render), nhưng khi phục vụ ra vì lý do gì đó đổi thành combo 3 gồm bít tết và khoai tây ít muối (re-render).
++ Khách vẫn ăn khoai tây y chang món cũ, nhưng chỉ vì bồi bàn viết lại tờ order mới, bếp phải làm lại khoai.
++ React vẫn phục vụ món khoai tây ít muối lại lần nữa.
+
+✅ 2. Missing/Unstable Key → “Phục vụ nhớ mặt khách thay vì số bàn”
+Nhà hàng có 2 bàn (list 2 items). Mỗi bàn có một khách hàng (item) với số bàn (key).
+React dùng số bàn để nhớ yêu cầu món ăn của khách. Giả sử nếu nhà hàng đông khách thì phải chèn thêm một bàn ở đầu. Dẫn tới số bàn bị thay đổi.
+
+Nếu người khách ở các bàn cũ đã order món rồi. Tình huống lúc này (unstable key):
++ Bàn 1 (new): Và món bàn số 1 được phục vụ cho bàn mới => Bàn mới bảo tôi chưa order => re-order và phục vụ lại (re-render).
++ Bàn 2 (1 - old): Và món bàn số 2 được phục vụ cho bàn số 1 => Bàn 1 bảo tôi không order món này => re-order và phục vụ lại (re-render).
++ Bàn 3 (2 - old): Bàn số 3 vẫn chưa có order. React bắt đầu quá trình order từ đầu (mounted from scratch).
+
+Nếu nhớ mặt thay vì nhớ theo số bàn:
++ Khách mới (bàn số 1 mới) sẽ được order và phục vụ từ đầu
++ Khách bàn 1 cũ (bàn số 2 mới) sẽ được phục vụ món đã order bàn 1.
++ Khách bàn 2 cũ (bàn số 3 mới) sẽ được phục vụ món đã order bàn 2.
+
+✅ 3. Phép so sánh: Vòng lặp của người phục vụ "Bạn có chắc không?"
+Cách hoạt động: Khách hàng đặt món: "Tôi dùng bít tết." (Render ban đầu). Nhà bếp nấu món bít tết, và bồi bàn phục vụ nó (Commit).
+
+Vấn đề: Nhà hàng này có một cuốn sổ quy tắc kỳ lạ (useEffect). Quy tắc là: "SAU KHI một món bít tết được phục vụ, người bồi bàn PHẢI ngay lập tức quay lại và hỏi khách xem họ có muốn dùng thêm nấm không." (Mặc dù có thể hỏi 1 lần ban đầu)
++ Khách order bít tết (listen input event của user).
++ Bồi bàn phục vụ bít tết (Commit 1).
++ Bồi bàn tuân theo quy tắc (useEffect): "Quý khách có muốn dùng nấm không?" (Thay vì hỏi lần 1)
++ Khách hàng nói: "Ồ, có." Đây là một đơn hàng mới (một trigger setState).
++ Bồi bàn đi vào nhà bếp (Trigger), nhà bếp nấu bít tết và nấm (Render 2).
++ Bồi bàn lại phục vụ bít tết và nấm (Commit 2).
