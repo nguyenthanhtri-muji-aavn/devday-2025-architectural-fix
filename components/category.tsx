@@ -24,10 +24,8 @@ export default function Category({
   const searchTermParam = searchParams.get('search-text') || '';
   const [searchTerm, setSearchTerm] = useState(searchTermParam);
   const [labubuList, setLabubuList] = useState<Product[]>([]);
-  const renderCountRef = useRef(0);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    renderCountRef.current = 0;
     const newSearchTerm = event.target.value;
     setSearchTerm(newSearchTerm);
     updateSearchParams('search-text', newSearchTerm);
@@ -83,7 +81,6 @@ export default function Category({
 
     fetchProducts();
   }, [searchTermParam]);
-  renderCountRef.current += 1;
 
   return (
     <>
@@ -97,7 +94,6 @@ export default function Category({
             onChange={handleSearchChange}
           />
         </div>{' '}
-        <div>Render Count: {renderCountRef.current}</div>
       </div>
       <div className='category-container'>
         {!filteredProducts.length ? (
