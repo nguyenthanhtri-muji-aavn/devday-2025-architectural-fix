@@ -114,10 +114,8 @@ const LabubuPrice = ({
   price: number;
   currency: string;
 }) => {
-  const ref = useFadeIn() as RefObject<HTMLDivElement>;
-
   return (
-    <div ref={ref}>
+    <div>
       <img
         src='/assets/images/price.svg'
         alt={currency}
@@ -256,7 +254,7 @@ const FlashSaleBadgeWithCounterWrapper = ({
         </div>
 
         <div className='cart-item-price'>
-          <MemoizedLabubuPrice price={price} currency='ETH' />
+          <LabubuPrice price={price} currency='ETH' />
 
           <MemoizedPlaceABidButton onClick={memoizedOnClick} />
         </div>
@@ -274,10 +272,8 @@ const StockInfo = ({ quantity }: { quantity?: number }) => {
 const MemoizedStockInfo = memo(StockInfo);
 
 const FlashSaleBanner = () => {
-  const ref = useFadeIn() as RefObject<HTMLDivElement>;
-
   return (
-    <div className='flash-sale-banner' ref={ref}>
+    <div className='flash-sale-banner' >
       FLASH SALE
     </div>
   );
