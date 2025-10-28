@@ -24,8 +24,10 @@ export default function Category({
   const searchTermParam = searchParams.get('search-text') || '';
   const [searchTerm, setSearchTerm] = useState(searchTermParam);
   const [labubuList, setLabubuList] = useState<Product[]>([]);
+  const countRef = useRef(0);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    countRef.current = 0;
     const newSearchTerm = event.target.value;
     setSearchTerm(newSearchTerm);
     updateSearchParams('search-text', newSearchTerm);
@@ -52,7 +54,6 @@ export default function Category({
     return matchesSearch;
   });
 
-  console.log('Products list rendered');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -81,6 +82,10 @@ export default function Category({
 
     fetchProducts();
   }, [searchTermParam]);
+
+  countRef.current += 1;
+  console.log('Products list rendered:', countRef.current);
+
 
   return (
     <>
