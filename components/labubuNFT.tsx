@@ -140,7 +140,7 @@ const FlashSaleCounter = ({
   return <span ref={ref}>{formattedCounter}</span>;
 };
 
-const FlashSaleBadgeWithCounterWrapper = ({
+const FlashSaleCounterWrapper = ({
   labubuInfoSection,
   isFlashSale,
   quantity,
@@ -330,7 +330,7 @@ const LabubuNFT: FC<LabubuNFTProps> = ({
 
       <LabubuBackground backgroundImg={backgroundImg} />
 
-      <FlashSaleBadgeWithCounterWrapper
+      <FlashSaleCounterWrapper
         name={name}
         labubuInfoSection={<LabubuInfo name={name} />}
         isFlashSale={isFlashSale}
