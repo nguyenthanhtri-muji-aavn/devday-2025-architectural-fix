@@ -59,9 +59,9 @@ const useButtonAnimation = () => {
 };
 
 /**
- * LabubuImage Component
+ * Image Component
  */
-const LabubuImage = ({
+const Image = ({
   imageUrl,
   name,
 }: {
@@ -74,9 +74,9 @@ const LabubuImage = ({
 };
 
 /**
- * LabubuBackground Component
+ * Background Component
  */
-const LabubuBackground = ({ backgroundImg }: { backgroundImg?: string }) => {
+const Background = ({ backgroundImg }: { backgroundImg?: string }) => {
   const ref = useFadeIn() as RefObject<HTMLDivElement>;
   return (
     <div className='card-top' ref={ref}>
@@ -85,7 +85,7 @@ const LabubuBackground = ({ backgroundImg }: { backgroundImg?: string }) => {
   );
 };
 
-const PlaceABidButton: FC<{ onClick: () => void }> = ({ onClick }) => {
+const Button: FC<{ onClick: () => void }> = ({ onClick }) => {
   const ref = useButtonAnimation();
 
   return (
@@ -94,7 +94,7 @@ const PlaceABidButton: FC<{ onClick: () => void }> = ({ onClick }) => {
     </button>
   );
 };
-const MemoizedPlaceABidButton = memo(PlaceABidButton);
+const MemoizedButton = memo(Button);
 
 const LabubuInfo = ({ name }: { name: string }) => {
   const ref = useFadeIn() as RefObject<HTMLDivElement>;
@@ -107,7 +107,7 @@ const LabubuInfo = ({ name }: { name: string }) => {
   );
 };
 
-const LabubuPrice = ({
+const Price = ({
   price,
   currency,
 }: {
@@ -129,7 +129,7 @@ const LabubuPrice = ({
   );
 };
 
-const MemoizedLabubuPrice = memo(LabubuPrice);
+const MemoizedLabubuPrice = memo(Price);
 
 const FlashSaleCounter = ({
   formattedCounter,
@@ -238,14 +238,14 @@ const FlashSaleCounterWrapper = ({
 
   return (
     <>
-      {isFlashSale && <FlashSaleBanner />}
+      {isFlashSale && <Badge />}
 
       <div className='card-body'>
         <div className='cart-item-name'>
           {labubuInfoSection}
 
           <div className='cart-item-stock-info'>
-            <MemoizedStockInfo quantity={stockQuantity} />
+            <MemoizedStock quantity={stockQuantity} />
 
             {isFlashSale && (
               <FlashSaleCounter formattedCounter={formattedCounter} />
@@ -254,24 +254,24 @@ const FlashSaleCounterWrapper = ({
         </div>
 
         <div className='cart-item-price'>
-          <LabubuPrice price={price} currency='ETH' />
+          <Price price={price} currency='ETH' />
 
-          <MemoizedPlaceABidButton onClick={memoizedOnClick} />
+          <MemoizedButton onClick={memoizedOnClick} />
         </div>
       </div>
     </>
   );
 };
 
-const StockInfo = ({ quantity }: { quantity?: number }) => {
+const Stock = ({ quantity }: { quantity?: number }) => {
   const ref = useFadeIn() as RefObject<HTMLSpanElement>;
 
   return <span ref={ref}>In stock: {quantity ?? 0}</span>;
 };
 
-const MemoizedStockInfo = memo(StockInfo);
+const MemoizedStock = memo(Stock);
 
-const FlashSaleBanner = () => {
+const Badge = () => {
   return (
     <div className='flash-sale-banner' >
       FLASH SALE
@@ -326,9 +326,9 @@ const LabubuNFT: FC<LabubuNFTProps> = ({
         } as React.CSSProperties
       }
     >
-      <LabubuImage imageUrl={imageUrl} name={name} />
+      <Image imageUrl={imageUrl} name={name} />
 
-      <LabubuBackground backgroundImg={backgroundImg} />
+      <Background backgroundImg={backgroundImg} />
 
       <FlashSaleCounterWrapper
         name={name}
