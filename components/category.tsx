@@ -7,16 +7,16 @@ import {
   products,
   productsWithAI,
 } from '../app/mock-data';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import LabubuNFT from '@/components/labubuNFT';
 import Link from 'next/link';
 
-export default function Category({
+const Category = ({
   params,
 }: {
   params: { 'category-id': string };
-}) {
+}) => {
   const categoryId = params['category-id'];
 
   const searchParams = useSearchParams();
@@ -43,7 +43,7 @@ export default function Category({
     router.push(`?${params.toString()}`);
   };
 
-  const filteredProducts = labubuList.filter((product) => {
+  const filteredProducts = useMemo(() => labubuList.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.tags.some((tag) =>
@@ -52,7 +52,7 @@ export default function Category({
       product.id.toString().includes(searchTerm);
 
     return matchesSearch;
-  });
+  }), [labubuList, searchTerm]);
 
 
   useEffect(() => {
@@ -87,6 +87,25 @@ export default function Category({
   console.log('Products list rendered:', countRef.current);
 
 
+  const filteredListRendered = useMemo(() => filteredProducts.map((item: Product, idx) => {
+    return (
+      <div key={item.id}>
+        <LabubuNFT
+          isFlashSale={item.id % 2 > 0}
+          name={item.name + ' #' + item.id}
+          imageUrl={item.image}
+          description={item.tags.join(', ')}
+          backgroundColor={item.background}
+          backgroundImg={item.backgroundImg}
+          price={item.price}
+          quantity={
+            item.stockQuantity || Math.floor(Math.random() * 100) + 1
+          }
+        />
+      </div>
+    );
+  }), [filteredProducts])
+
   return (
     <>
       <div className='category-filter'>
@@ -109,29 +128,14 @@ export default function Category({
               category!
             </p>
           </div>
-        ) : (
+        ) : ( 
           <div className='category-items'>
-            {filteredProducts.map((item: Product, idx) => {
-              return (
-                <div key={item.id}>
-                  <LabubuNFT
-                    isFlashSale={item.id % 2 > 0}
-                    name={item.name + ' #' + item.id}
-                    imageUrl={item.image}
-                    description={item.tags.join(', ')}
-                    backgroundColor={item.background}
-                    backgroundImg={item.backgroundImg}
-                    price={item.price}
-                    quantity={
-                      item.stockQuantity || Math.floor(Math.random() * 100) + 1
-                    }
-                  />
-                </div>
-              );
-            })}
+            {filteredListRendered}
           </div>
         )}
       </div>
     </>
   );
 }
+
+export default memo(Category);
