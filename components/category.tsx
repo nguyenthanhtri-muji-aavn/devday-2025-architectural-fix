@@ -115,7 +115,7 @@ export default function Category({
               return (
                 <div key={item.id}>
                   <LabubuNFT
-                    isFlashSale={idx % 3 > 0}
+                    isFlashSale={item.id % 2 > 0}
                     name={item.name + ' #' + item.id}
                     imageUrl={item.image}
                     description={item.tags.join(', ')}
