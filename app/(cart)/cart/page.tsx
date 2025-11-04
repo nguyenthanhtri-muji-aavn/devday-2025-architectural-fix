@@ -94,14 +94,25 @@ const CartDetailsSection = () => {
             'X-Session-Id': 'your-session-id',
           },
         });
-        const data = await res.json();
+        const data = {
+          data: {
+            items: cart.map((cartItem) => {
+              const product = products.find(
+                (prod) => prod.id === cartItem.productId
+              );
+              return {
+                ...cartItem,
+                product: product,
+              };
+            }),
+          }
+        };
         setCartsData(
           data?.data?.items
             ? data?.data?.items.map((cartItem: { product: any }) => ({
-                ...cartItem,
-                ...cartItem.product,
-                background: generateRandomBackground(),
-              }))
+              ...cartItem,
+              ...cartItem.product,
+            }))
             : []
         );
       } catch (error) {

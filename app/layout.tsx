@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import "./global.scss";
-import { Orbitron, Outfit, Quicksand} from 'next/font/google';
+import { Orbitron, Outfit, Quicksand } from 'next/font/google';
 import { Analytics } from "@vercel/analytics/react"
 
 export const metadata = {
-  title: "Labubu NFT - Architectural fix",
+  title: "Labubu NFT - Dev Fixed",
   description:
     "A sample Next.js app showing dynamic routing and intercepting routing with modals as a route.",
 };
@@ -37,14 +37,14 @@ export default function RootLayout(props: {
         <link rel="icon" href="/logo.png" />
       </head>
       <body className={`${orbitron.variable} ${outfit.variable} ${quicksand.variable}`}>
-	  
+
         <div className="body">
-		<Analytics />
+          <Analytics />
           <Suspense>
             {props.children}
           </Suspense>
         </div>
-        <div id="modal-root" />      
+        <div id="modal-root" />
       </body>
     </html>
   );
