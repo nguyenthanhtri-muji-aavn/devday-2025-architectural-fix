@@ -84,7 +84,7 @@ const Category = ({
   }, [searchTermParam]);
 
   countRef.current += 1;
-  // console.log('Products list rendered:', countRef.current);
+  console.log('Products list rendered:', countRef.current);
 
 
   const filteredListRendered = useMemo(() => filteredProducts.map((item: Product, idx) => {
